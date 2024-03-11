@@ -1,0 +1,47 @@
+#!/bin/zsh
+
+# MacOS specific
+alias bell='tput bel'
+alias ghwatch='gh pr checks --watch && notify "CI has completed successfully :D" || notify "Oh no, CI failed ;("'
+
+# notify is a script I have in /usr/local/bin (macOS specific)
+# #!/bin/bash
+# msg=${*:-`cat`}
+# /usr/bin/osascript -e "display notification \"$msg\""
+
+# Generic
+alias a2l='$HOME/.local/opt/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e build/zephyr/zephyr.elf'
+alias cdn='cd ${NCS_PATH}/'
+alias cdt='cd ${NCS_WT_PATH}; cd '
+alias rmb='rm -rf build'
+alias wb='west build'
+alias wf='date && west flash --dev-id $(nrfjprog -i | sort | head -n1) && bell'
+alias wfe='date && west flash --dev-id $(nrfjprog -i | sort | head -n1) --erase && bell'
+alias wb9160='west build -b nrf9160dk_nrf9160_ns'
+alias wb9161='west build -b nrf9161dk_nrf9161_ns'
+alias wb91='wb9160'
+alias rwb9160='rmb && wb9160'
+alias rwb9161='rmb && wb9161'
+alias rwb91='rwb9160'
+alias wbt91='west build -b thingy91_nrf9160_ns@1.6.0'
+alias rwbt91='rmb && wbt91'
+alias t91='twister -T . -i -vvv -p nrf9160dk_nrf9160_ns'
+alias wb52='west build -b nrf52840dk_nrf52840'
+alias rwb52='rmb && wb52'
+alias wb7002='west build -b nrf7002dk_nrf5340_cpuapp_ns'
+alias wb7002s='west build -b nrf7002dk_nrf5340_cpuapp'
+alias rwb7002='rmb && wb7002'
+alias rwb7002s='rmb && wb7002s'
+alias checkpatch='exec git diff --cached | ${NCS_PATH}/zephyr/scripts/checkpatch.pl -'
+alias checktree='exec git diff HEAD | ${NCS_PATH}/zephyr/scripts/checkpatch.pl -'
+alias check_compliance='${NCS_PATH}/zephyr/scripts/ci/check_compliance.py -e Kconfig -c upstream/main..HEAD'
+alias pmr='west build -t partition_manager_report'
+alias mc='west build -t menuconfig'
+alias greb='f() { grep -r --include $1 $2 build };f'
+alias grebc='greb .config'
+alias certinfo='openssl x509 -noout -text -in'
+alias certinfoec='openssl ec -noout -text -in'
+alias gtl='git worktree list'
+alias '??'='gh copilot suggest -t shell'
+alias 'gh?'='gh copilot suggest -t gh'
+alias 'git?'='gh copilot suggest -t git'

@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+autoload -U +X compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
+source ~/west-completion.sh

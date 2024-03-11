@@ -1,0 +1,63 @@
+#!/bin/zsh
+
+# git worktree add for an sdk-nrf branch and initialize it
+# Usage: gta <branch-name>
+# Branch will be created if it doesn't exist already.
+# Creates a worktree at ${NCS_WT_PATH}/<branch-name>/nrf
+function gta() {
+  if [[ -z $1 ]] ; then
+    echo "Missing worktree path argument"
+    return
+  fi
+
+  git worktree add ${NCS_WT_PATH}/$1/nrf $1
+
+  # error code is returned if branch does not exist already
+  # create new branch if error code is returned
+  if [[ $? -ne 0 ]] ; then
+    git worktree add -b $1 ${NCS_WT_PATH}/$1/nrf
+
+    # exit if still failing
+    if [[ $? -ne 0 ]] ; then
+      echo "Failed to create worktree"
+      return
+    fi
+  fi
+
+  cp ${NCS_WT_PATH}/dotenv ${NCS_WT_PATH}/$1/.env
+  cd ${NCS_WT_PATH}/$1
+  pip3 install west
+  cd ${NCS_WT_PATH}/$1/nrf
+  west init -l
+  west update --narrow -o=--depth=1
+  cd ${NCS_WT_PATH}/$1
+  west zephyr-export
+  pip3 install -r zephyr/scripts/requirements.txt
+  pip3 install -r nrf/scripts/requirements.txt
+  pip3 install -r bootloader/mcuboot/scripts/requirements.txt
+}
+
+# git worktree remove and delete the parent folder
+function gtr() {
+  # validate arguments to avoid rm -rf /
+  if [[ -z $1 ]] ; then
+    echo "Missing worktree path argument"
+    return
+  fi
+
+  if [[ -z $NCS_WT_PATH ]] ; then
+    echo "NCS_WT_PATH is empty"
+    return
+  fi
+
+  # promt user to comfirm deletion in zsh
+  read -q "REPLY?Do you want to remove the worktree at ${NCS_WT_PATH}/$1? (y/n) "
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    echo "Aborting"
+    return
+  fi
+
+  git worktree remove -f "${NCS_WT_PATH}/${1}/nrf"
+  rm -rf "${NCS_WT_PATH}/${1}"
+}

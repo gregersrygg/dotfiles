@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
+export QEMU_BIN_PATH=/opt/homebrew/bin
+export PATH=~/bin:$PATH:$HOME/Library/Python/3.8/bin:$HOME/gn:$HOME/.local/bin
+export NCS_PATH=$HOME/devel/ncs
+export NCS_WT_PATH=$HOME/devel/ncswt
