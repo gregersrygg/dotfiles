@@ -6,8 +6,19 @@
 # Creates a worktree at ${NCS_WT_PATH}/<branch-name>/nrf
 function gta() {
   if [[ -z $1 ]] ; then
-    echo "Missing worktree path argument"
-    return
+    echo "Missing branch argument"
+    exit 1
+  fi
+
+  if [[ -z $NCS_WT_PATH ]] ; then
+    echo "NCS_WT_PATH is empty"
+    exit 1
+  fi
+
+  # check if folder ${NCS_WT_PATH} exists
+  if [[ ! -d $NCS_WT_PATH ]] ; then
+    echo "$NCS_WT_PATH does not exist"
+    exit 1
   fi
 
   git worktree add ${NCS_WT_PATH}/$1/nrf $1
@@ -24,7 +35,7 @@ function gta() {
     fi
   fi
 
-  cp ${NCS_WT_PATH}/dotenv ${NCS_WT_PATH}/$1/.env
+  cp $HOME/.wtdotenv ${NCS_WT_PATH}/$1/.env
   cd ${NCS_WT_PATH}/$1
   pip3 install west
   cd ${NCS_WT_PATH}/$1/nrf

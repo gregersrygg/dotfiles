@@ -1,0 +1,19 @@
+cleanpath() {
+    PATH=$(echo $PATH | sed -e 's/:[^:]*\/zephyr\/scripts//')
+}
+
+pathadd() {
+    if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+        PATH="${PATH:+"$PATH:"}$1"
+    fi
+}
+
+source ../.venv/bin/activate
+export ZEPHYR_BASE=${PWD}/zephyr
+export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
+
+# remove old zephyr/scripts from PATH
+cleanpath
+
+# add zephyr/scripts to PATH
+pathadd $ZEPHYR_BASE/scripts
