@@ -3,3 +3,9 @@
 autoload -U +X compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 source ~/west-completion.sh
+
+_cdt_completion() {
+    _files -W $NCS_WT_PATH -/
+}
+
+compdef _cdt_completion cdt

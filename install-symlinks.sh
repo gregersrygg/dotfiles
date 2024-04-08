@@ -1,6 +1,11 @@
 #!/bin/zsh
 
-for file in .{aliases,completion,exports,functions,gitconfig,zprofile,wtdotenv} west-completion.sh ; do
+for file in .{aliases,completion,exports,functions,gitconfig,zprofile,zshrc,wtdotenv} west-completion.sh ; do
+    if [ -L ~/$file ]; then
+        echo "Skipping already symlinked ~/$file"
+        continue
+    fi
+
     if [ -f ~/$file ]; then
         echo "Backing up ~/$file to ~/$file.org"
         mv ~/$file ~/$file.org

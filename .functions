@@ -72,3 +72,9 @@ function gtr() {
   git worktree remove -f "${NCS_WT_PATH}/${1}/nrf"
   rm -rf "${NCS_WT_PATH}/${1}"
 }
+
+function cdt() {
+  # first cd to the worktree ncs folder to activate .env
+  cd ${NCS_WT_PATH}/$1
+  cd nrf
+}
