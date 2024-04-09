@@ -21,12 +21,12 @@ function gta() {
     exit 1
   fi
 
-  git worktree add ${NCS_WT_PATH}/$1/nrf $1
+  git -C ${NCS_PATH}/nrf worktree add ${NCS_WT_PATH}/$1/nrf $1
 
   # error code is returned if branch does not exist already
   # create new branch if error code is returned
   if [[ $? -ne 0 ]] ; then
-    git worktree add -b $1 ${NCS_WT_PATH}/$1/nrf
+    git -C ${NCS_PATH}/nrf worktree add -b $1 ${NCS_WT_PATH}/$1/nrf
 
     # exit if still failing
     if [[ $? -ne 0 ]] ; then
@@ -70,7 +70,7 @@ function gtr() {
     return
   fi
 
-  git worktree remove -f "${NCS_WT_PATH}/${1}/nrf"
+  git -C ${NCS_PATH}/nrf worktree remove -f "${NCS_WT_PATH}/${1}/nrf"
   rm -rf "${NCS_WT_PATH}/${1}"
 }
 
