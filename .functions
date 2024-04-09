@@ -46,6 +46,7 @@ function gta() {
   pip3 install -r zephyr/scripts/requirements.txt
   pip3 install -r nrf/scripts/requirements.txt
   pip3 install -r bootloader/mcuboot/scripts/requirements.txt
+  cd nrf
 }
 
 # git worktree remove and delete the parent folder
