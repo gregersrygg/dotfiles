@@ -74,6 +74,11 @@ function gtr() {
 }
 
 function cdt() {
+  if [[ ! -d ${NCS_WT_PATH}/$1 ]] ; then
+    echo "The worktree ${NCS_WT_PATH}/$1 does not exist"
+    return 1
+  fi
+
   # first cd to the worktree ncs folder to activate .env
   cd ${NCS_WT_PATH}/$1
   cd nrf
