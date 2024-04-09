@@ -11,7 +11,7 @@ alias ghwatch='gh pr checks --watch && notify "CI has completed successfully :D"
 
 # Generic
 alias a2l='$HOME/.local/opt/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e build/zephyr/zephyr.elf'
-alias cdn='cd ${NCS_PATH}/'
+alias cdn='cd ${NCS_PATH}/ && cd - && cd ${NCS_PATH}/nrf'
 alias rmb='rm -rf build'
 alias wb='west build'
 alias wf='date && west flash --dev-id $(nrfjprog -i | sort | head -n1) && bell'
