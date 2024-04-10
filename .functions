@@ -7,18 +7,19 @@
 function gta() {
   if [[ -z $1 ]] ; then
     echo "Missing branch argument"
-    exit 1
+    return 1
   fi
 
   if [[ -z $NCS_WT_PATH ]] ; then
     echo "NCS_WT_PATH is empty"
-    exit 1
+    return 1
   fi
 
   # check if folder ${NCS_WT_PATH} exists
   if [[ ! -d $NCS_WT_PATH ]] ; then
     echo "$NCS_WT_PATH does not exist"
-    exit 1
+    return 1
+  fi
   fi
 
   git -C ${NCS_PATH}/nrf worktree add ${NCS_WT_PATH}/$1/nrf $1
@@ -28,7 +29,6 @@ function gta() {
   if [[ $? -ne 0 ]] ; then
     git -C ${NCS_PATH}/nrf worktree add -b $1 ${NCS_WT_PATH}/$1/nrf
 
-    # exit if still failing
     if [[ $? -ne 0 ]] ; then
       echo "Failed to create worktree"
       return
