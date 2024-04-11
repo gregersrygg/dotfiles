@@ -1,52 +1,90 @@
-#!/bin/zsh
+#!/bin/sh
 
-autoload -U +X compinit && compinit
-autoload -U +X bashcompinit && bashcompinit
-source ~/west-completion.sh
+if [[ -n $ZSH_VERSION ]]; then
+    autoload -U +X compinit && compinit
+    autoload -U +X bashcompinit && bashcompinit
+    source ~/west-completion.sh
+fi
 
 _cdt_completion() {
-    _files -W $NCS_WT_PATH -/
+    if [[ -n $ZSH_VERSION ]]; then
+        _files -W $NCS_WT_PATH -/
+    elif [[ -n $BASH_VERSION ]]; then
+        COMPREPLY=()
+        local cur=${COMP_WORDS[COMP_CWORD]}
+        local dirs=$(ls -d $NCS_WT_PATH/*/ 2>/dev/null)
+        # remove the path prefix
+        dirs=${dirs//$NCS_WT_PATH\//}
+        # remove the trailing slash from all elements
+        dirs=${dirs//\//}
+        COMPREPLY=($(compgen -W "$dirs" -- $cur))
+    fi
 }
 
 _gtr_completion() {
-    _files -W $NCS_WT_PATH -/
+    if [[ -n $ZSH_VERSION ]]; then
+        _files -W $NCS_WT_PATH -/
+    elif [[ -n $BASH_VERSION ]]; then
+        COMPREPLY=()
+        local cur=${COMP_WORDS[COMP_CWORD]}
+        local dirs=$(ls -d $NCS_WT_PATH/*/ 2>/dev/null)
+        # remove the path prefix
+        dirs=${dirs//$NCS_WT_PATH\//}
+        COMPREPLY=($(compgen -W "$dirs" -- $cur))
+    fi
 }
 
 _gta_completion() {
     branches=$(git -C $NCS_PATH/nrf branch --sort=-committerdate --format='%(refname:short)')
     branches=${branches//main/}
 
-    # remove existing worktrees
+    # remove existing worktrees from the list
     for dir in $NCS_WT_PATH/*; do
-        branches=${branches//$dir:t/}
+        branches=${branches//$(basename $dir)/}
     done
 
-    # convert newline-separated string to array
-    branches=("${(@f)branches}")
+    if [[ -n $ZSH_VERSION ]]; then
+        # convert newline-separated string to array
+        branches=("${(@f)branches}")
 
-    # remove empty elements
-    branches=(${branches:#})
+        # remove empty elements
+        branches=(${branches:#})
 
-    # get the current word being completed
-    local curcontext="$curcontext" state line
-    typeset -A opt_args
-    _arguments -C '*: :->branch' && return 0
+        # get the current word being completed
+        local curcontext="$curcontext" state line
+        typeset -A opt_args
+        _arguments -C '*: :->branch' && return 0
 
-    case $state in
-        branch)
-            local -a match_branches
-            # filter and limit branches to 10
-            for branch in $branches; do
-                if [[ $branch == $line[1]* ]] && (( ${#match_branches} < 10 )); then
-                    match_branches+=($branch)
-                fi
-            done
-            _describe -V 'branches' match_branches
-            ;;
-    esac
+        case $state in
+            branch)
+                local -a match_branches
+                # filter and limit branches to 10
+                for branch in $branches; do
+                    if [[ $branch == $line[1]* ]] && (( ${#match_branches} < 10 )); then
+                        match_branches+=($branch)
+                    fi
+                done
+                _describe -V 'branches' match_branches
+                ;;
+        esac
+    elif [[ -n $BASH_VERSION ]]; then
+        # convert newline-separated string to array
+        IFS=$'\n' read -rd '' -a branches <<< "$branches"
+
+        # limit to 10 most recent branches
+        branches=("${branches[@]:0:10}")
+
+        COMPREPLY=("${branches[@]}")
+    fi
 
 }
 
-compdef _cdt_completion cdt
-compdef _gtr_completion gtr
-compdef _gta_completion gta
+if [[ -n $ZSH_VERSION ]]; then
+    compdef _cdt_completion cdt
+    compdef _gtr_completion gtr
+    compdef _gta_completion gta
+elif [[ -n $BASH_VERSION ]]; then
+    complete -F _cdt_completion cdt
+    complete -F _gtr_completion gtr
+    complete -F _gta_completion gta
+fi

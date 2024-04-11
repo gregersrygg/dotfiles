@@ -1,8 +1,10 @@
-#!/bin/zsh
+#!/bin/sh
 
 # MacOS specific
-alias bell='tput bel'
-alias ghwatch='gh pr checks --watch && notify "CI has completed successfully :D" || notify "Oh no, CI failed ;("'
+if [[ $(uname) == "Darwin" ]]; then
+    alias bell='tput bel'
+    alias ghwatch='gh pr checks --watch && notify "CI has completed successfully :D" || notify "Oh no, CI failed ;("'
+fi
 
 # notify is a script I have in /usr/local/bin (macOS specific)
 # #!/bin/bash

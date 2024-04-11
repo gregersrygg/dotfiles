@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # git worktree add for an sdk-nrf branch and initialize it
 # Usage: gta <branch-name>
@@ -23,7 +23,7 @@ function gta() {
 
   if [[ $1 == pr-* ]] ; then
     echo "Fetching pull request branch"
-    git -C ${NCS_PATH}/nrf fetch upstream pull/${1:3}/head:$1
+    git -C ${NCS_PATH}/nrf fetch upstream pull/$(echo $1 | cut -c 4-)/head:$1
   fi
 
   git -C ${NCS_PATH}/nrf worktree add ${NCS_WT_PATH}/$1/nrf $1
