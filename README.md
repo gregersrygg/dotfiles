@@ -4,7 +4,7 @@ Here are my dotfiles that I mainly use to develop with Zephyr for Nordic Semicon
 I put them here for backup and in case someone else find them useful.
 
 > [!WARNING]
-> I'm using macOS and ZSH with [oh-my-zsh](https://ohmyz.sh/#install), so if you want to use this you might have to adjust some parts.
+> I'm using macOS and ZSH with [oh-my-zsh](https://ohmyz.sh/#install), but I've attempted to make the configurations compatible with bash and linux.
 
 ## Installation
 

@@ -1,5 +1,7 @@
-[credential]
-	helper = osxkeychain
+# Platform-specific configuration
+[include]
+    path = ~/.gitconfig.platform
+
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
