@@ -39,6 +39,7 @@ function ncsgta() {
   fi
 
   cp $HOME/.wtdotenv ${NCS_WT_PATH}/$1/.env
+  python3 -m venv ${NCS_WT_PATH}/$1/.venv
   cd ${NCS_WT_PATH}/$1
   pip3 install west
   cd ${NCS_WT_PATH}/$1/nrf
