@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 
 install_file() {
-    srcfile=$1
+    # get absolute path to the current script
+    script_dir=$(cd "$(dirname "$0")" && pwd)
+    srcfile=$script_dir/$1
     dstfile=$2
 
     if [ -L $dstfile ]; then
-        echo "Skipping already symlinked $dstfile"
+        if [ $(readlink $dstfile) = $srcfile ]; then
+            echo "Skipping already symlinked $dstfile"
+            return
+        else
+            echo "Removing old symlink"
+            rm $dstfile
+        fi
         return
     fi
 
@@ -14,10 +22,7 @@ install_file() {
         mv $dstfile $dstfile.org
     fi
 
-    # get absolute path to the current script
-    script_dir=$(cd "$(dirname "$0")" && pwd)
-
-    ln -s $script_dir/$srcfile $dstfile
+    ln -s $srcfile $dstfile
 
 }
 
