@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # MacOS specific
 if [[ $(uname) == "Darwin" ]]; then
     alias bell='tput bel'

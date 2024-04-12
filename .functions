@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # git worktree add for an sdk-nrf branch and initialize it
 # Usage: gta <branch-name>
 # Branch will be created if it doesn't exist already.
