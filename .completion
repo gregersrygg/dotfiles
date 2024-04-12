@@ -4,7 +4,7 @@ if [[ -n $ZSH_VERSION ]]; then
     source ~/west-completion.sh
 fi
 
-_cdt_completion() {
+_ncscdt_completion() {
     if [[ -n $ZSH_VERSION ]]; then
         _files -W $NCS_WT_PATH -/
     elif [[ -n $BASH_VERSION ]]; then
@@ -19,7 +19,7 @@ _cdt_completion() {
     fi
 }
 
-_gtr_completion() {
+_ncsgtr_completion() {
     if [[ -n $ZSH_VERSION ]]; then
         _files -W $NCS_WT_PATH -/
     elif [[ -n $BASH_VERSION ]]; then
@@ -32,7 +32,7 @@ _gtr_completion() {
     fi
 }
 
-_gta_completion() {
+_ncsgta_completion() {
     branches=$(git -C $NCS_PATH/nrf branch --sort=-committerdate --format='%(refname:short)')
     branches=${branches//main/}
 
@@ -78,11 +78,11 @@ _gta_completion() {
 }
 
 if [[ -n $ZSH_VERSION ]]; then
-    compdef _cdt_completion cdt
-    compdef _gtr_completion gtr
-    compdef _gta_completion gta
+    compdef _ncscdt_completion ncscdt
+    compdef _ncsgtr_completion ncsgtr
+    compdef _ncsgta_completion ncsgta
 elif [[ -n $BASH_VERSION ]]; then
-    complete -F _cdt_completion cdt
-    complete -F _gtr_completion gtr
-    complete -F _gta_completion gta
+    complete -F _ncscdt_completion ncscdt
+    complete -F _ncsgtr_completion ncsgtr
+    complete -F _ncsgta_completion ncsgta
 fi

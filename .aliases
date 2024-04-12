@@ -11,7 +11,7 @@ fi
 
 # Generic
 alias a2l='$HOME/.local/opt/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e build/zephyr/zephyr.elf'
-alias cdn='cd ${NCS_PATH}/ && cd - && cd ${NCS_PATH}/nrf'
+alias ncscdn='cd ${NCS_PATH}/ && cd - && cd ${NCS_PATH}/nrf'
 alias rmb='rm -rf build'
 alias wb='west build'
 alias wf='date && west flash --dev-id $(nrfjprog -i | sort | head -n1) && bell'
@@ -40,7 +40,7 @@ alias greb='f() { grep -r --include $1 $2 build };f'
 alias grebc='greb .config'
 alias certinfo='openssl x509 -noout -text -in'
 alias certinfoec='openssl ec -noout -text -in'
-alias gtl='git -C ${NCS_PATH}/nrf worktree list'
+alias ncsgtl='git -C ${NCS_PATH}/nrf worktree list'
 alias '??'='gh copilot suggest -t shell'
 alias 'gh?'='gh copilot suggest -t gh'
 alias 'git?'='gh copilot suggest -t git'

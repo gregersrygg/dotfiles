@@ -1,8 +1,9 @@
 # git worktree add for an sdk-nrf branch and initialize it
-# Usage: gta <branch-name>
+# Usage: ncsgta <branch-name>
 # Branch will be created if it doesn't exist already.
+# If the branch name starts with pr-, it will fetch the pull request branch from upstream.
 # Creates a worktree at ${NCS_WT_PATH}/<branch-name>/nrf
-function gta() {
+function ncsgta() {
   if [[ -z $1 ]] ; then
     echo "Missing branch argument"
     return 1
@@ -52,7 +53,7 @@ function gta() {
 }
 
 # git worktree remove and delete the parent folder
-function gtr() {
+function ncsgtr() {
   # validate arguments to avoid rm -rf /
   if [[ -z $1 ]] ; then
     echo "Missing worktree path argument"
@@ -76,7 +77,7 @@ function gtr() {
   rm -rf "${NCS_WT_PATH}/${1}"
 }
 
-function cdt() {
+function ncscdt() {
   if [[ ! -d ${NCS_WT_PATH}/$1 ]] ; then
     echo "The worktree ${NCS_WT_PATH}/$1 does not exist"
     return 1
