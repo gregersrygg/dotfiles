@@ -26,14 +26,8 @@ install_file() {
 
 }
 
-for file in .{aliases,completion,exports,functions,gitconfig,zshrc,wtdotenv}; do
-    dstfile=$file
-    # if file is .zshrc and we are in bash change it to .bashrc
-    if [ $file = ".zshrc" ] && [ -n $BASH_VERSION ]; then
-        dstfile=".bashrc"
-    fi
-
-    install_file $file ~/$dstfile
+for file in .{aliases,completion,exports,functions,gitconfig,wtdotenv}; do
+    install_file $file ~/$file
 done;
 
 if echo "$SHELL" | grep -q "zsh"; then
