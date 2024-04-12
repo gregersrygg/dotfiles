@@ -1,7 +1,7 @@
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * Put a dotfile with the same filename in ~/.local/dotfiles for user customizations.
-for file in ~/.{path,exports,aliases,functions,completion}; do
+for file in .{path,exports,aliases,functions,completion}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 
 	# check for user customizations in ~/.local/dotfiles
