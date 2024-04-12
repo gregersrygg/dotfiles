@@ -38,13 +38,4 @@ fi
 
 install_file west-completion.sh ~/west-completion.sh
 
-# install platform specific gitconfig
-if [ $(uname) = "Darwin" ]; then
-    install_file .gitconfig.macos ~/.gitconfig.platform
-elif [ $(uname) = "Linux" ]; then
-    install_file .gitconfig.linux ~/.gitconfig.platform
-elif [ $(uname) = "Windows" ]; then
-    install_file .gitconfig.windows ~/.gitconfig.platform
-fi
-
 unset file;
