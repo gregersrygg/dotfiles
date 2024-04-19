@@ -22,7 +22,17 @@ function ngwa() {
 
   if [[ $1 == pr-* ]] ; then
     echo "Fetching pull request branch"
-    git -C ${NCS_PATH}/nrf fetch upstream pull/$(echo $1 | cut -c 4-)/head:$1
+    pr_number=$(echo $1 | cut -c 4-)
+
+    # fetch the PR branch
+    git -C ${NCS_PATH}/nrf fetch upstream pull/${pr_number}/head:$1
+
+    # make sure the PR branch is up to date
+    git -C ${NCS_PATH}/nrf update-ref refs/heads/$1 FETCH_HEAD
+
+    # configure the branch so git pull works
+    git -C ${NCS_PATH}/nrf config branch.$1.remote upstream
+    git -C ${NCS_PATH}/nrf config branch.$1.merge refs/pull/${pr_number}/head
   fi
 
   git -C ${NCS_PATH}/nrf worktree add ${NCS_WT_PATH}/$1/nrf $1
