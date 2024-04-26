@@ -1,0 +1,11 @@
+# [user]
+#         name = Your Name
+#         email = Your Email
+# [credential]
+# What credential helper depends on the platform you are using.
+# If you are using Mac, you can use the following:
+#         helper = osxkeychain
+# If you are using Linux, you can use the following (depends on gh):
+#        helper = !gh auth git-credential
+# For example, if you are using Windows with WSL, you can use the following:
+#         helper = Manager
