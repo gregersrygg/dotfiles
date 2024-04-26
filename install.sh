@@ -11,7 +11,7 @@ install_file() {
             echo "Skipping already symlinked $dstfile"
             return
         else
-            echo "Removing old symlink"
+            echo "Removing old symlink $dstfile"
             rm $dstfile
         fi
         return
@@ -26,27 +26,28 @@ install_file() {
 
 }
 
-create_file_if_not_exists() {
-    if [ ! -f $1 ]; then
+install_local_file() {
+    file=$1
+
+    if [ -f ~/.local/dotfiles/$file ]; then
+        return
+    fi
+
+    if [ -f .local/dotfiles/$file ]; then
+        cp .local/dotfiles/$file ~/.local/dotfiles/$file
+    else
         touch $1
     fi
 }
-
-mkdir -p ~/.local/dotfiles
 
 for file in .{aliases,completion,exports,functions,gitconfig,wtdotenv}; do
     install_file $file ~/$file
 done;
 
-# create empty files if they don't exist in ~/.local/dotfiles
-for file in .{aliases,completion,exports,functions,wtdotenv,path,extra}; do
-    create_file_if_not_exists ~/.local/dotfiles/$file
+mkdir -p ~/.local/dotfiles
+for file in .{aliases,completion,exports,functions,gitconfig,wtdotenv,path,extra}; do
+    install_local_file $file
 done;
-
-# if .gitconfig does not exist in ~/.local/dotfiles, copy it from the repo
-if [ ! -f ~/.local/dotfiles/.gitconfig ]; then
-    cp .local/dotfiles/.gitconfig ~/.local/dotfiles/.gitconfig
-fi
 
 if echo "$SHELL" | grep -q "zsh"; then
     install_file .shellrc ~/.zshrc
