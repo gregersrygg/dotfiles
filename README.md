@@ -69,6 +69,14 @@ ngwr <worktree-name>
 
 Use TAB-completion to list your worktrees
 
+#### list worktrees (ngwl)
+
+Not that much magic here. Just saves typing out `git worktree list`, and it can be called from any folder.
+
+```bash
+ngwl
+```
+
 #### cd to a worktree (ncd)
 
 It's a bit cumbersome to switch between the folders, and especially to trigger the `.env` file at the same time.
@@ -84,13 +92,9 @@ ncd foo
 
 Use TAB-completion to list your worktrees
 
-#### list worktrees
+#### Open current worktree in VS Code (ncode)
 
-Not that much magic here. Just saves typing out `git worktree list`, and it can be called from any folder.
-
-```bash
-ngwl
-```
+Shortcut to open a VS Code workspace for the current worktree.
 
 ### aliases/functions
 
@@ -108,6 +112,7 @@ ngwl
 | ncd     | ncs cd (see section above)                   |
 | ngwa    | ncs git worktree add (see section above)     |
 | ngwr    | ncs git worktree remove (see section above)  |
+| ncode   | Open VS Code for the current NCS root folder |
 | pmr     | Partition Manager report                     |
 | mc      | menuconfig                                   |
 | greb    | grep <filename> <searchstring> in the build folder |
