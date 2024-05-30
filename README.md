@@ -1,7 +1,129 @@
 # Gregers's dotfiles
 
 Here are my dotfiles that I mainly use to develop with Zephyr for Nordic Semiconductor.
-I put them here for backup and in case someone else find them useful.
+It's mostly a collection of tips and tricks I've gathered from colleagues and some ideas I've explored myself.
+We all have a lot of shell customizations, but if we share and contribute openly we can learn from each other to get even better shell customizations.
+Please use, and contribute with new ideas :bulb:.
+
+## Main features
+
+### Git worktree for ncs :christmas_tree:
+
+Git worktree is a native git command that allows you to check out and work on multiple git branches at the same time.
+When you're in the middle of working on a new feature, it can be painful to clean up uncommited changes or deal with untracked files. With worktrees you just add a new worktree for the branch you need to check out. Because it's checked out in a different folder it won't conflict with your existing worktrees.
+
+Typically git worktrees have a folder structure like this:
+
+```
+~
+└- dev/
+   ├- myproject/           <- main branch
+   └- myprojectwt/
+      ├- add-new-feature   <- add-new-feature branch
+      ├- fix-bug           <- fix-bug branch
+      ├- ...
+```
+
+Because zephyr have west dependencies in sibling folders the typical worktree structure won't work very well. Instead I structure the worktrees like this:
+
+```
+~
+└- dev/
+   ├- ncs
+   |  └- nrf              <- main branch
+   └- ncswt/
+      ├- add-new-feature
+      |  └- nrf           <- add-new-feature branch
+      ├- fix-bug
+      |  └- nrf           <- fix-bug branch
+      ├- ...
+```
+
+Since setting up the dependencies and isolating them is a bit of extra work, I've made a bash function to simplify adding, removing, listing and cd-ing between the worktrees.
+
+#### Add a new worktree (ngwa)
+
+ngwa is short for ncs-git-worktree-add
+
+It will create a worktree with the same name as the branch in your configured `NCS_WT_PATH` folder. It will add a `.env` file so environment variables are set correctly for that worktree and initialize a new python virtualenv to scope pip dependencies to that worktree only.
+
+Then it will install west (in the virtualenv). Do a west init and update, and install requirements.txt from nrf, zephyr and mcuboot.
+
+```bash
+ngwa <branch-name>
+```
+
+_branch-name_ can be an existing branch you have locally, a new branch that you want to create, or a PR from `upstream` by using the branch name `pr-<number>`.
+
+Use TAB-completion to list your most recent branches.
+
+#### Remove an existing worktree (ngwr)
+
+ngwr is short for ncs-git-worktree-remove
+
+It's good practice to clean up your workspaces after you're done with it.
+
+```bash
+ngwr <worktree-name>
+```
+
+Use TAB-completion to list your worktrees
+
+#### cd to a worktree (ncd)
+
+It's a bit cumbersome to switch between the folders, and especially to trigger the `.env` file at the same time.
+`ncd` to the rescue.
+
+```bash
+# cd to ncs/nrf
+ncd
+
+# cd to worktree named foo
+ncd foo
+```
+
+Use TAB-completion to list your worktrees
+
+#### list worktrees
+
+Not that much magic here. Just saves typing out `git worktree list`, and it can be called from any folder.
+
+```bash
+ngwl
+```
+
+### aliases/functions
+
+#### Zephyr related aliases/functions
+
+| Name    | Description                                  |
+|---------|----------------------------------------------|
+| wb      | west build                                   |
+| wf      | west flash using the debugger with the highest device id (usually prefers external debuggers) |
+| rmb     | rm build folder                              |
+| wfe     | west flash --erase (and same as wf)          |
+| wfr     | west flash --recover (and same as wf)        |
+| wb????  | west build for nRF???? DK                    |
+| rwb???? | Same as wb??? but deletes build folder first |
+| ncd     | ncs cd (see section above)                   |
+| ngwa    | ncs git worktree add (see section above)     |
+| ngwr    | ncs git worktree remove (see section above)  |
+| pmr     | Partition Manager report                     |
+| mc      | menuconfig                                   |
+| greb    | grep <filename> <searchstring> in the build folder |
+| grebc   | grep in .config files in the build folder    |
+
+#### Other aliases/functions
+
+| Name       | Description                                  |
+|------------|----------------------------------------------|
+| ??         | ?? <copilot shell related question>          |
+| gh??       | gh?? <copilot gh related question>           |
+| git??      | git?? <copilot git related question>         |
+| bell       | PC beep (useful after long running commands) |
+| notify     | Desktop notification (useful after long running commands) |
+| certinfo   | OpenSSL certificate info for non elliptic curve certificates |
+| certinfoec | OpenSSL certificate info for non elliptic curve certificates |
 
 ## Made for re-usability and local customizations
 
@@ -21,6 +143,27 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
 ## Dependencies
 
 * [gh](https://github.com/cli/cli?tab=readme-ov-file#installation) - needed by alias ghwatch
+* dotenv
+
+    If you don't use zsh and Oh My ZSH you need to find a dotenv alternative. There are many, but as long as it can automatically source a `.env` file in a folder it doesn't matter which project you use.
+
+### Linux dependencies
+
+* notify-send
+
+    Allows you to send desktop notifications from commandline.
+
+        sudo apt install notify-send
+
+### Windows dependencies
+
+* toast
+
+    Allows you to send Windows desktop notifications from WSL.
+
+    Compile yourself or download pre-compiled exe from the [GitHub repo](https://github.com/go-toast/toast).
+
+    Add the exe to your PATH.
 
 ### Optional dependencies
 
@@ -39,6 +182,7 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
         ./install.sh
 
     Update your terminal settings to use one of the Powerline fonts, like Menlo.
+
 
 ## Installation
 
