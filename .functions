@@ -1,3 +1,22 @@
+function notify() {
+  msg=${*:-`cat`}
+  if [[ $(uname) == "Darwin" ]]; then
+    /usr/bin/osascript -e "display notification \"$msg\""
+  elif [[ $(which powershell.exe) ]]; then
+    toast=$(which toast64.exe)
+    if [[ ! -f $toast ]]; then
+      toast=$(which toast32.exe)
+    fi
+
+    $toast --app-id "Shell notification" \
+      --title "Shell notification" \
+      --message "$msg" \
+      --audio "default"
+  elif [[ $(uname) == "Linux" ]]; then
+    notify-send "$msg"
+  fi
+}
+
 # git worktree add for an sdk-nrf branch and initialize it
 # Usage: ngwa <branch-name>
 # Branch will be created if it doesn't exist already.

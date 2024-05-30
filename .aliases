@@ -2,12 +2,12 @@
 if [[ $(uname) == "Darwin" ]]; then
     alias bell='tput bel'
     alias ghwatch='gh pr checks --watch && notify "CI has completed successfully :D" || notify "Oh no, CI failed ;("'
+elif [[ $(which powershell.exe) ]]; then # WSL
+    # $(grep Microsoft /proc/version)
+    alias bell='powershell.exe "[console]::beep(4000,80)"'
+elif [[ $(uname) == "Linux" ]]; then
+    alias bell='echo -e \007'
 fi
-
-# notify is a script I have in /usr/local/bin (macOS specific)
-# #!/bin/bash
-# msg=${*:-`cat`}
-# /usr/bin/osascript -e "display notification \"$msg\""
 
 # Generic
 alias a2l='$HOME/.local/opt/zephyr-sdk-0.16.5/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e build/zephyr/zephyr.elf'
