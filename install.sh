@@ -57,4 +57,9 @@ fi
 
 install_file west-completion.sh ~/west-completion.sh
 
+# build customized zephyr docker image used for running twister tests in native_sim
+if command -v docker &> /dev/null; then
+    docker build -t dotfiles .
+fi
+
 unset file;

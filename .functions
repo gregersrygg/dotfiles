@@ -128,3 +128,21 @@ function ncd() {
   cd ${NCS_WT_PATH}/$1
   cd nrf
 }
+
+# run twister command inside docker
+function twister() {
+  if [[ -z $1 ]] ; then
+    echo "Missing twister command"
+    return 1
+  fi
+
+  if [[ -z $ZEPHYR_BASE ]] ; then
+    echo "ZEPHYR_BASE is empty"
+    return 1
+  fi
+
+  prj_root=$(realpath $ZEPHYR_BASE/..)/
+  rel_cwd=${PWD#$prj_root}
+
+  docker run --rm -t -v ${prj_root}:/workdir -w /workdir/${rel_cwd} dotfiles west twister $*
+}
