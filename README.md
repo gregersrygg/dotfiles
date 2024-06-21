@@ -117,6 +117,7 @@ Shortcut to open a VS Code workspace for the current worktree.
 | mc      | menuconfig                                   |
 | greb    | grep <filename> <searchstring> in the build folder |
 | grebc   | grep in .config files in the build folder    |
+| twister | Run `west twister` inside a Zephyr docker container |
 
 #### Other aliases/functions
 
@@ -169,6 +170,12 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
     Compile yourself or download pre-compiled exe from the [GitHub repo](https://github.com/go-toast/toast).
 
     Add the exe to your PATH.
+
+### macOS dependencies
+
+* Docker
+
+    To be able execute twister tests in native_sim on macOS.
 
 ### Optional dependencies
 
