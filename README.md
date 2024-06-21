@@ -185,6 +185,10 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
 
     If you use zsh and have Oh My ZSH! installed, a default configuration in .exports will be loaded. Add your local overrides from this configuration in `~/.local/dotfiles/.exports`.
 
+* fzf - A command line fuzzy finder plugin for Oh My ZSH
+
+    git clone --depth 1 https://github.com/unixorn/fzf-zsh-plugin.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-zsh-plugin
+
 * Powerline fonts (if using Oh My ZSH!)
 
     The configured ZSH theme, agnoster, depends on this font for the prompt to work correctly:
