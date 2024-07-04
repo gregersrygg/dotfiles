@@ -100,24 +100,26 @@ Shortcut to open a VS Code workspace for the current worktree.
 
 #### Zephyr related aliases/functions
 
-| Name    | Description                                  |
-|---------|----------------------------------------------|
-| wb      | west build                                   |
-| wf      | west flash using the debugger with the highest device id (usually prefers external debuggers) |
-| rmb     | rm build folder                              |
-| wfe     | west flash --erase (and same as wf)          |
-| wfr     | west flash --recover (and same as wf)        |
-| wb????  | west build for nRF???? DK                    |
-| rwb???? | Same as wb??? but deletes build folder first |
-| ncd     | ncs cd (see section above)                   |
-| ngwa    | ncs git worktree add (see section above)     |
-| ngwr    | ncs git worktree remove (see section above)  |
-| ncode   | Open VS Code for the current NCS root folder |
-| pmr     | Partition Manager report                     |
-| mc      | menuconfig                                   |
-| greb    | grep <filename> <searchstring> in the build folder |
-| grebc   | grep in .config files in the build folder    |
-| twister | Run `west twister` inside a Zephyr docker container |
+| Name     | Description                                  |
+|----------|----------------------------------------------|
+| wb       | west build                                   |
+| wf       | west flash using the debugger with the highest device id (usually prefers external debuggers) |
+| rmb      | rm build folder                              |
+| wfe      | west flash --erase (and same as wf)          |
+| wfr      | west flash --recover (and same as wf)        |
+| wb????   | west build for nRF???? DK                    |
+| rwb????  | Same as wb??? but deletes build folder first |
+| ncd      | ncs cd (see section above)                   |
+| ngwa     | ncs git worktree add (see section above)     |
+| ngwr     | ncs git worktree remove (see section above)  |
+| ncode    | Open VS Code for the current NCS root folder |
+| pmr      | Partition Manager report                     |
+| mc       | menuconfig                                   |
+| greb     | grep <filename> <searchstring> in the build folder |
+| grebc    | grep in .config files in the build folder    |
+| zd <cmd> | Run a command inside a Zephyr docker container |
+| zdi      | Start Zephyr docker container as an interactive terminal |
+| twister  | Run `west twister` using zd (see above)      |
 
 #### Other aliases/functions
 
