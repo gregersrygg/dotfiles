@@ -8,6 +8,31 @@ export QEMU_BIN_PATH=/opt/homebrew/bin
 export NCS_PATH=$HOME/devel/ncs
 export NCS_WT_PATH=$HOME/devel/ncswt
 
+# locate Zephyr SDK toolchain install dir
+if [[ -z "$ZEPHYR_TOOLCHAIN_PATH" ]]; then
+    required_package="zephyr-sdk"
+    required_version="0.16"
+
+    zephyr_search_paths=(
+        "$HOME"
+        "$HOME/.local"
+        "$HOME/.local/opt"
+        "$HOME/bin"
+        "/opt"
+        "/usr/local"
+    )
+
+    for zephyr_search_path in "${zephyr_search_paths[@]}"; do
+        matching_dir=$(find "$zephyr_search_path" -maxdepth 1 -type d \
+            -name "${required_package}-${required_version}.*" | sort | tail -n 1)
+
+        if [[ -n "$matching_dir" ]]; then
+            export ZEPHYR_TOOLCHAIN_PATH="$matching_dir"
+            break
+        fi
+    done
+fi
+
 # DON'T ADD PATH HERE, CREATE .path FILE INSTEAD
 
 # oh-my-zsh

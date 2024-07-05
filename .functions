@@ -159,3 +159,25 @@ function zdi() {
 
   docker run --rm -it -v ${prj_root}:/workdir -w /workdir/${rel_cwd} dotfiles /bin/bash
 }
+
+function a2l() {
+  if [[ -z $ZEPHYR_TOOLCHAIN_PATH ]] ; then
+    echo "ZEPHYR_TOOLCHAIN_PATH is empty"
+    return 1
+  fi
+
+  if [[ ! -d $ZEPHYR_TOOLCHAIN_PATH/arm-zephyr-eabi/bin ]] ; then
+    echo "arm-zephyr-eabi/bin does not exist in $ZEPHYR_TOOLCHAIN_PATH"
+    return 1
+  fi
+
+  elf_path="build/zephyr/zephyr.elf"
+
+  # include app name in elf_path if sysbuild was used to build
+  if [[ -f build/domains.yaml ]] ; then
+    app_name=$(grep 'default:' build/domains.yaml | cut -d ' ' -f 2)
+    elf_path="build/${app_name}/zephyr/zephyr.elf"
+  fi
+
+  $ZEPHYR_TOOLCHAIN_PATH/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e $elf_path $*
+}

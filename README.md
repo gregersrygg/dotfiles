@@ -117,6 +117,7 @@ Shortcut to open a VS Code workspace for the current worktree.
 | mc       | menuconfig                                   |
 | greb     | grep <filename> <searchstring> in the build folder |
 | grebc    | grep in .config files in the build folder    |
+| a2l <addr> | addr2line alias for application image      |
 | zd <cmd> | Run a command inside a Zephyr docker container |
 | zdi      | Start Zephyr docker container as an interactive terminal |
 | twister  | Run `west twister` using zd (see above)      |
@@ -150,6 +151,7 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
 
 ## Dependencies
 
+* [Zephyr SDK toolchain](https://docs.zephyrproject.org/latest/develop/toolchains/zephyr_sdk.html#zephyr-sdk-installation)
 * [gh](https://github.com/cli/cli?tab=readme-ov-file#installation) - needed by alias ghwatch
 * dotenv
 
