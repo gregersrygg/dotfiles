@@ -1,14 +1,14 @@
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * Put a dotfile with the same filename in ~/.local/dotfiles for user customizations.
-for file in .{path,exports,aliases,functions,completion,extra}; do
-	if [ -r "$HOME/$file" ] && [ -f "$HOME/$file" ]; then
-		source "$HOME/$file";
+for dotfile in .{path,exports,aliases,functions,completion,extra}; do
+	if [ -r "$HOME/$dotfile" ] && [ -f "$HOME/$dotfile" ]; then
+		source "$HOME/$dotfile";
 	fi
 
 	# check for user customizations in ~/.local/dotfiles
-	if [ -r "$HOME/.local/dotfiles/$file" ] && [ -f "$HOME/.local/dotfiles/$file" ]; then
-		source "$HOME/.local/dotfiles/$file"
+	if [ -r "$HOME/.local/dotfiles/$dotfile" ] && [ -f "$HOME/.local/dotfiles/$dotfile" ]; then
+		source "$HOME/.local/dotfiles/$dotfile"
 	fi
 done;
-unset file;
+unset dotfile;
