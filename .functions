@@ -181,3 +181,147 @@ function a2l() {
 
   $ZEPHYR_TOOLCHAIN_PATH/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e $elf_path $*
 }
+
+# nrfcloud related
+
+function nrfcloud-delete-device() {
+  device_id=$1
+  device_ownership_code=$2
+
+  if [[ -z $NRF_CLOUD_API_KEY ]] ; then
+    echo "NRF_CLOUD_API_KEY is empty"
+    return 1
+  fi
+
+  if [[ -z $device_id ]] ; then
+    echo "Missing device id"
+    echo "Usage: nrfcloud-delete-device <device-id> <device-ownership-code>"
+    return 1
+  fi
+
+  if [[ -z $device_ownership_code ]] ; then
+    echo "Missing device ownership code"
+    echo "Usage: nrfcloud-delete-device <device-id> <device-ownership-code>"
+    return 1
+  fi
+
+  curl -X DELETE https://api.nrfcloud.com/v1/devices/$device_id \
+    -d $device_ownership_code \
+    -H "Authorization: Bearer $NRF_CLOUD_API_KEY" \
+    -H "Content-Type: text/plain"
+}
+
+function nrfcloud-create-device-cert() {
+  device_id=$1
+  device_ownership_code=$2
+
+  if [[ -z $NRF_CLOUD_API_KEY ]] ; then
+    echo "NRF_CLOUD_API_KEY is empty"
+    return 1
+  fi
+
+  if [[ -z $device_id ]] ; then
+    echo "Missing device id"
+    echo "Usage: nrfcloud-delete-device <device-id> <device-ownership-code>"
+    return 1
+  fi
+
+  if [[ -z $device_ownership_code ]] ; then
+    echo "Missing device ownership code"
+    echo "Usage: nrfcloud-delete-device <device-id> <device-ownership-code>"
+    return 1
+  fi
+
+  curl -X POST https://api.nrfcloud.com/v1/devices/$device_id/certificates \
+    -d "$device_ownership_code" \
+    -H "Authorization: Bearer $NRF_CLOUD_API_KEY" \
+    -H "Content-Type: text/plain" \
+    -o "$device_id.cert.json" \
+    -f
+
+  if [[ $? -ne 0 ]] ; then
+    echo "Failed to create device certificate"
+    return 1
+  else
+    echo "Device certificate stored to $device_id.cert.json"
+  fi
+}
+
+function nrfcloud-associate-device() {
+  device_id=$1
+  device_ownership_code=$2
+
+  if [[ -z $NRF_CLOUD_API_KEY ]] ; then
+    echo "NRF_CLOUD_API_KEY is empty"
+    return 1
+  fi
+
+  if [[ -z $device_id ]] ; then
+    echo "Missing device id"
+    echo "Usage: nrfcloud-delete-device <device-id> <device-ownership-code>"
+    return 1
+  fi
+
+  if [[ -z $device_ownership_code ]] ; then
+    echo "Missing device ownership code"
+    echo "Usage: nrfcloud-delete-device <device-id> <device-ownership-code>"
+    return 1
+  fi
+
+  curl -X PUT https://api.nrfcloud.com/v1/association/$device_id \
+    -d "$device_ownership_code" \
+    -H "Authorization: Bearer $NRF_CLOUD_API_KEY" \
+    -H "Content-Type: text/plain"
+}
+
+function install-device-certs() {
+  device_path=$1
+  cert_file=$2
+  sec_tag=${3:-16842753}
+
+  if [[ -z $device_path ]] ; then
+    echo "Missing device path"
+    echo "Usage: install-device-certs <device-path> <cert-file> [sec-tag]"
+    return 1
+  fi
+
+  if [[ -z $cert_file ]] ; then
+    echo "Missing cert file"
+    echo "Usage: install-device-certs <device-path> <cert-file> [sec-tag]"
+    return 1
+  fi
+
+  if [[ ! -c $device_path ]] ; then
+    echo "$device_path is not a character device"
+    return 1
+  fi
+
+  if [[ ! -f $cert_file ]] ; then
+    echo "$cert_file does not exist"
+    return 1
+  fi
+
+  cat $cert_file | jq -r .clientCert > $cert_file.client.pem
+  cat $cert_file | jq -r .privateKey > $cert_file.key.pem
+  cat $cert_file | jq -r .caCert > $cert_file.ca.pem
+
+  # delete old certs
+  nrfcredstore $device_path delete $sec_tag ROOT_CA_CERT
+  nrfcredstore $device_path delete $sec_tag CLIENT_CERT
+  nrfcredstore $device_path delete $sec_tag CLIENT_KEY
+
+  # install new certs
+  nrfcredstore $device_path write $sec_tag ROOT_CA_CERT $cert_file.ca.pem
+  nrfcredstore $device_path write $sec_tag CLIENT_CERT $cert_file.client.pem
+  nrfcredstore $device_path write $sec_tag CLIENT_KEY $cert_file.key.pem
+
+  echo "Device certificates installed in $sec_tag"
+}
+
+# switch between aws profiles and set environment variables
+awsp() {
+  export AWS_REGION=us-east-1
+  export NRFCLOUD_ENV=$1
+  export AWS_PROFILE=$1
+  export STAGE=$1
+}
