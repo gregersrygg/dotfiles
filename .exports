@@ -1,5 +1,10 @@
-# if macOS, initialize Homebrew
+# macOS-specific exports
 if [[ $(uname) == "Darwin" ]]; then
+    # Workaround Zephyr ccache issue on macOS
+    # https://github.com/zephyrproject-rtos/sdk-ng/issues/855
+    export CCACHE_IGNOREOPTIONS="-specs=* --specs=*"
+
+    # if macOS, initialize Homebrew
     eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
