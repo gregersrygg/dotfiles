@@ -263,6 +263,114 @@ function wtcd() {
   fi
 }
 
+# remove Claude Code worktrees whose PRs have been merged
+function wtclean() {
+  local repo_root force=false
+  [[ $1 == "-f" ]] && force=true
+  repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [[ -z $repo_root ]]; then
+    echo "Not in a git repository"
+    return 1
+  fi
+
+  local wt_dir="$repo_root/.claude/worktrees"
+  if [[ ! -d $wt_dir ]]; then
+    echo "No Claude worktrees directory at $wt_dir"
+    return 1
+  fi
+
+  if ! command -v gh >/dev/null 2>&1; then
+    echo "gh CLI is required for PR state detection"
+    return 1
+  fi
+
+  local dirs=()
+  for d in "$wt_dir"/*/; do
+    [[ -d $d ]] && dirs+=("$(basename "$d")")
+  done
+
+  if [[ ${#dirs[@]} -eq 0 ]]; then
+    echo "No worktrees found"
+    return 0
+  fi
+
+  local removable=()
+  local red=$'\033[31m' green=$'\033[32m' yellow=$'\033[33m' cyan=$'\033[36m' reset=$'\033[0m'
+
+  echo "Scanning worktrees..."
+  echo ""
+
+  local wt_path branch dirty pr_state status_icon ahead
+  for name in "${dirs[@]}"; do
+    wt_path="$wt_dir/$name"
+    branch=$(git -C "$wt_path" branch --show-current 2>/dev/null)
+    dirty=$(git -C "$wt_path" status --porcelain 2>/dev/null)
+
+    if [[ -n $dirty ]]; then
+      status_icon="${red}dirty${reset}"
+    else
+      pr_state=$(gh pr view "$branch" --json state --jq '.state' 2>/dev/null)
+      if [[ $pr_state == "MERGED" ]]; then
+        status_icon="${green}merged${reset}"
+        removable+=("$name")
+      elif [[ $pr_state == "OPEN" ]]; then
+        status_icon="${yellow}open${reset}"
+      elif [[ $pr_state == "CLOSED" ]]; then
+        status_icon="${yellow}closed${reset}"
+      else
+        ahead=$(git -C "$repo_root" rev-list --count main.."$branch" 2>/dev/null)
+        if [[ $ahead -eq 0 ]]; then
+          status_icon="${green}unused${reset}"
+          removable+=("$name")
+        else
+          status_icon="${yellow}no PR${reset} (${ahead} ahead)"
+        fi
+      fi
+    fi
+
+    printf "  ${cyan}%-30s${reset} %-40s %b\n" "$name" "$branch" "$status_icon"
+  done
+
+  echo ""
+
+  if [[ ${#removable[@]} -eq 0 ]]; then
+    echo "No worktrees to clean up."
+    return 0
+  fi
+
+  echo "${#removable[@]} worktree(s) can be removed:"
+  for name in "${removable[@]}"; do
+    echo "  $name"
+  done
+  echo ""
+
+  if [[ $force != true ]]; then
+    if [[ -n $ZSH_VERSION ]]; then
+      read -q "REPLY?Remove these worktrees? (y/n) "
+    else
+      read -p "Remove these worktrees? (y/n) " -n 1 REPLY
+    fi
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+      echo "Aborted."
+      return 0
+    fi
+  fi
+
+  for name in "${removable[@]}"; do
+    wt_path="$wt_dir/$name"
+    branch=$(git -C "$wt_path" branch --show-current 2>/dev/null)
+    echo "Removing $name..."
+    git -C "$repo_root" worktree remove --force "$wt_path" 2>/dev/null
+    if [[ $branch == worktree-* ]]; then
+      git -C "$repo_root" branch -D "$branch" 2>/dev/null
+    fi
+  done
+
+  git -C "$repo_root" worktree prune
+  echo "Done."
+}
+
 # nrfcloud related
 
 function nrfcloud-delete-device() {
