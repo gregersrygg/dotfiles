@@ -13,3 +13,6 @@
 # username and email in separate file
 [include]
 	path = ~/.local/dotfiles/.gitconfig
+
+[push]
+	default = current

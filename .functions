@@ -182,6 +182,27 @@ function a2l() {
   $ZEPHYR_TOOLCHAIN_PATH/arm-zephyr-eabi/bin/arm-zephyr-eabi-addr2line -e $elf_path $*
 }
 
+function certinfo() {
+  awk 'BEGIN {cert=""; n=0}
+  /-----BEGIN CERTIFICATE-----/ {
+    cert=$0;
+    in_cert=1;
+    next
+  }
+  /-----END CERTIFICATE-----/ {
+    cert=cert ORS $0;
+    print cert | "openssl x509 -noout -text";
+    close("openssl x509 -noout -text");
+    print "";
+    in_cert=0;
+    next
+  }
+  in_cert {
+    cert=cert ORS $0
+  }
+  ' "$1"
+}
+
 # nrfcloud related
 
 function nrfcloud-delete-device() {
@@ -324,4 +345,5 @@ awsp() {
   export NRFCLOUD_ENV=$1
   export AWS_PROFILE=$1
   export STAGE=$1
+  kubectl config use-context $1
 }
