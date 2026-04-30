@@ -203,6 +203,66 @@ function certinfo() {
   ' "$1"
 }
 
+# cd to a Claude Code worktree in the current repo
+function wtcd() {
+  local repo_root
+  repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [[ -z $repo_root ]]; then
+    echo "Not in a git repository"
+    return 1
+  fi
+
+  local wt_dir="$repo_root/.claude/worktrees"
+  if [[ ! -d $wt_dir ]]; then
+    echo "No Claude worktrees directory found at $wt_dir"
+    return 1
+  fi
+
+  if [[ -n $1 ]]; then
+    if [[ ! -d "$wt_dir/$1" ]]; then
+      echo "Worktree '$1' not found in $wt_dir"
+      return 1
+    fi
+    cd "$wt_dir/$1"
+    return
+  fi
+
+  local dirs=()
+  for d in "$wt_dir"/*/; do
+    [[ -d $d ]] && dirs+=("$(basename "$d")")
+  done
+
+  if [[ ${#dirs[@]} -eq 0 ]]; then
+    echo "No worktrees found in $wt_dir"
+    return 1
+  fi
+
+  local lines=""
+  local cyan=$'\033[36m' green=$'\033[32m' reset=$'\033[0m'
+  for name in "${dirs[@]}"; do
+    local branch commit_subject
+    branch=$(git -C "$wt_dir/$name" branch --show-current 2>/dev/null)
+    commit_subject=$(git -C "$wt_dir/$name" log --oneline -1 --format='%s' 2>/dev/null)
+    lines+="${cyan}${name}${reset}"$'\t'"${green}${branch}${reset}"$'\t'"${commit_subject}"$'\n'
+  done
+
+  local selection
+  if command -v fzf >/dev/null 2>&1; then
+    selection=$(printf '%s' "$lines" | column -t -s $'\t' | fzf --ansi --no-sort | awk '{print $1}')
+  else
+    printf '%s' "$lines" | column -t -s $'\t'
+    echo ""
+    select name in "${dirs[@]}"; do
+      selection=$name
+      break
+    done
+  fi
+
+  if [[ -n $selection ]]; then
+    cd "$wt_dir/$selection"
+  fi
+}
+
 # nrfcloud related
 
 function nrfcloud-delete-device() {

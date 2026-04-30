@@ -77,12 +77,32 @@ _ngwa_completion() {
 
 }
 
+_wtcd_completion() {
+    local repo_root wt_dir
+    repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+    wt_dir="$repo_root/.claude/worktrees"
+    [[ -d $wt_dir ]] || return
+
+    if [[ -n $ZSH_VERSION ]]; then
+        _files -W "$wt_dir" -/
+    elif [[ -n $BASH_VERSION ]]; then
+        COMPREPLY=()
+        local cur=${COMP_WORDS[COMP_CWORD]}
+        local dirs=$(ls -d "$wt_dir"/*/ 2>/dev/null)
+        dirs=${dirs//$wt_dir\//}
+        dirs=${dirs//\//}
+        COMPREPLY=($(compgen -W "$dirs" -- $cur))
+    fi
+}
+
 if [[ -n $ZSH_VERSION ]]; then
     compdef _ncd_completion ncd
     compdef _ngwr_completion ngwr
     compdef _ngwa_completion ngwa
+    compdef _wtcd_completion wtcd
 elif [[ -n $BASH_VERSION ]]; then
     complete -F _ncd_completion ncd
     complete -F _ngwr_completion ngwr
     complete -F _ngwa_completion ngwa
+    complete -F _wtcd_completion wtcd
 fi
