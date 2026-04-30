@@ -20,6 +20,9 @@ Feel free to use these dotfiles and contribute your own ideas! :bulb:
     * [List worktrees (ngwl)](#list-worktrees-ngwl)
     * [cd to a worktree (ncd)](#cd-to-a-worktree-ncd)
     * [Open current worktree in VS Code (ncode)](#open-current-worktree-in-vs-code-ncode)
+    * [Claude Code worktrees](#claude-code-worktrees)
+        * [cd to a Claude Code worktree (wtcd)](#cd-to-a-claude-code-worktree-wtcd)
+        * [Clean up stale worktrees (wtclean)](#clean-up-stale-worktrees-wtclean)
     * [aliases/functions](#aliasesfunctions)
         * [Zephyr related aliases/functions](#zephyr-related-aliasesfunctions)
         * [Other aliases/functions](#other-aliasesfunctions)
@@ -218,6 +221,38 @@ ncd foo
 
 `ncode` is a shortcut to open a VS Code workspace for the current worktree.
 
+### Claude Code worktrees
+
+[Claude Code](https://claude.ai/code) can create git worktrees in `.claude/worktrees/` when started with the `--worktree` flag. The auto-generated names (e.g. `abstract-wobbling-gadget`) make it hard to navigate to them manually. These functions help with that.
+
+#### cd to a Claude Code worktree (wtcd)
+
+`wtcd` works from any directory inside a git repo.
+
+```bash
+# Interactive picker (requires fzf) showing worktree name, branch, and latest commit
+wtcd
+
+# cd directly to a worktree by name
+wtcd abstract-wobbling-gadget
+```
+
+*Use TAB-completion to list available worktrees.*
+
+#### Clean up stale worktrees (wtclean)
+
+`wtclean` scans `.claude/worktrees/` and identifies worktrees that are safe to remove: PRs that have been merged (detected via `gh` CLI, works with squash merges) and unused branches with no commits ahead of main. Shows a colored summary and prompts before deleting.
+
+```bash
+# Interactive — shows status table, asks for confirmation
+wtclean
+
+# Skip confirmation prompt
+wtclean -f
+```
+
+Auto-generated branch names (`worktree-*`) are cleaned up along with the worktree. User-named branches are left intact.
+
 ## Aliases/Functions
 
 ### Zephyr related aliases/functions
@@ -255,6 +290,8 @@ ncd foo
 | notify     | Desktop notification (useful after long running commands) |
 | certinfo   | OpenSSL certificate info for non elliptic curve certificates |
 | certinfoec | OpenSSL certificate info for non elliptic curve certificates |
+| wtcd       | cd to a Claude Code worktree (see [section above](#cd-to-a-claude-code-worktree-wtcd)) |
+| wtclean    | Clean up stale Claude Code worktrees (see [section above](#clean-up-stale-worktrees-wtclean)) |
 
 ## Thanks to
 
