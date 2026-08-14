@@ -40,14 +40,23 @@ install_local_file() {
     fi
 }
 
-for file in .{aliases,completion,exports,functions,gitconfig,wtdotenv}; do
+for file in .{aliases,completion,exports,functions,gitconfig,wtenvrc}; do
     install_file $file ~/$file
 done;
 
 mkdir -p ~/.local/dotfiles
-for file in .{aliases,completion,exports,functions,gitconfig,wtdotenv,path,extra}; do
+for file in .{aliases,completion,exports,functions,gitconfig,wtenvrc,path,extra}; do
     install_local_file $file
 done;
+
+# .wtdotenv was replaced by .wtenvrc when switching from dotenv to direnv
+for stale in ~/.wtdotenv ~/.local/dotfiles/.wtdotenv; do
+    if [ -L $stale ] && [ ! -e $stale ]; then
+        echo "Removing stale symlink $stale"
+        rm $stale
+    fi
+done;
+unset stale;
 
 if echo "$SHELL" | grep -q "zsh"; then
     install_file .shellrc ~/.zshrc
@@ -60,6 +69,11 @@ install_file west-completion.sh ~/west-completion.sh
 # build customized zephyr docker image used for running twister tests in native_sim
 if command -v docker &> /dev/null; then
     docker build -t dotfiles .
+fi
+
+if ! command -v direnv &> /dev/null; then
+    echo "WARNING: direnv not found. Worktree environments won't load automatically."
+    echo "         Install it with 'brew install direnv' (or your package manager)."
 fi
 
 unset file;

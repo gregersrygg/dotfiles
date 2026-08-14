@@ -86,9 +86,14 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
 
 * [Zephyr SDK toolchain](https://docs.zephyrproject.org/latest/develop/toolchains/zephyr_sdk.html#zephyr-sdk-installation)
 * [gh](https://github.com/cli/cli?tab=readme-ov-file#installation) - needed by alias ghwatch
-* dotenv
+* [direnv](https://direnv.net/) - loads the per-worktree environment automatically
 
-    If you don't use zsh and Oh My ZSH you need to find a dotenv alternative. There are many, but as long as it can automatically source a `.env` file in a folder it doesn't matter which project you use.
+      brew install direnv
+
+    The shell hook is set up for you in [.exports](.exports) (zsh and bash). direnv loads a folder's `.envrc` when you `cd` into it or any of its subfolders, and reverts the changes when you leave.
+
+    > [!NOTE]
+    > direnv refuses to load an `.envrc` until you approve it with `direnv allow`. `ngwa` does that for you when it creates a worktree. If you ever edit a worktree's `.envrc` by hand, run `direnv allow` again.
 
 ### Linux dependencies
 
@@ -165,13 +170,30 @@ See [.shellrc](.shellrc) for which filenames it checks for. As you might notice,
 
 5. Start a new shell to test the changes.
 
+### Migrating existing worktrees from dotenv to direnv
+
+These dotfiles used to rely on the Oh My ZSH `dotenv` plugin and a `.env` file per worktree. If you have worktrees created before the switch, give each of them an `.envrc` and approve it:
+
+```bash
+for wt in $NCS_WT_PATH/*/; do
+    cp ~/.wtenvrc "$wt/.envrc"
+    direnv allow "$wt/.envrc"
+done
+
+# and the main checkout, if it has a .env
+cp ~/.wtenvrc $NCS_PATH/.envrc
+direnv allow $NCS_PATH/.envrc
+```
+
+The old `.env` files are ignored from then on and can be deleted.
+
 ## Usage
 
 ### Add a new worktree
 
 `ngwa` is short for ncs-git-worktree-add
 
-It will create a worktree with the same name as the branch in your configured `NCS_WT_PATH` folder. It will add a `.env` file so environment variables are set correctly for that worktree and initialize a new python virtualenv to scope pip dependencies to that worktree only.
+It will create a worktree with the same name as the branch in your configured `NCS_WT_PATH` folder. It will add a direnv `.envrc` file (and `direnv allow` it) so environment variables are set correctly for that worktree, and initialize a new python virtualenv to scope pip dependencies to that worktree only.
 
 Then it will install west (in the virtualenv). Do a west init and update, and install requirements.txt from nRF, Zephyr and mcuboot.
 
@@ -205,7 +227,7 @@ ngwl
 
 ### cd to a worktree
 
-`ncd` helps switch between the folders, and especially to trigger the `.env` file at the same time.
+`ncd` helps switch between the worktree folders. direnv picks up the worktree's `.envrc` on the way in and drops it again when you leave.
 
 ```bash
 # cd to ncs/nrf

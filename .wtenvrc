@@ -1,0 +1,14 @@
+# direnv template. Copied into each NCS worktree as .envrc by ngwa.
+#
+# direnv evaluates this with the current directory set to the worktree root,
+# and reverts every change when you leave it, so there is no need to strip
+# stale zephyr/scripts entries out of PATH like the old .env file did.
+
+# activate the worktree-local virtualenv
+export VIRTUAL_ENV="$PWD/.venv"
+PATH_add "$VIRTUAL_ENV/bin"
+
+export ZEPHYR_BASE="$PWD/zephyr"
+export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
+
+PATH_add "$ZEPHYR_BASE/scripts"

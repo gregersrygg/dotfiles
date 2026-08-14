@@ -67,8 +67,14 @@ function ngwa() {
     fi
   fi
 
-  cp $HOME/.wtdotenv ${NCS_WT_PATH}/$1/.env
+  cp $HOME/.wtenvrc ${NCS_WT_PATH}/$1/.envrc
   python3 -m venv ${NCS_WT_PATH}/$1/.venv
+
+  # whitelist the new .envrc so direnv loads it without prompting
+  if command -v direnv &> /dev/null; then
+    direnv allow ${NCS_WT_PATH}/$1/.envrc
+  fi
+
   cd ${NCS_WT_PATH}/$1
   pip3 install west
   cd ${NCS_WT_PATH}/$1/nrf
@@ -109,12 +115,8 @@ function ngwr() {
 
 # cd to nrf folder in ncs or worktree
 function ncd() {
+  # direnv finds the .envrc in the parent folder, so a single cd is enough
   if [[ -z $1 ]] ; then
-    # first cd to the ncs folder to activate .env
-    cd ${NCS_PATH}/
-    # then cd back to the previous folder to allow cd - to work after cd to nrf
-    cd -
-    # finally cd to nrf folder
     cd ${NCS_PATH}/nrf
     return
   fi
@@ -124,9 +126,7 @@ function ncd() {
     return 1
   fi
 
-  # first cd to the worktree ncs folder to activate .env
-  cd ${NCS_WT_PATH}/$1
-  cd nrf
+  cd ${NCS_WT_PATH}/$1/nrf
 }
 
 # generic function to run a command in the zephyr docker container

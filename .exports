@@ -107,14 +107,13 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     # Would you like to use another custom folder than $ZSH/custom?
     # ZSH_CUSTOM=/path/to/new-custom-folder
 
-    ZSH_DOTENV_FILE=.env
-
     # Which plugins would you like to load?
     # Standard plugins can be found in $ZSH/plugins/
     # Custom plugins may be added to $ZSH_CUSTOM/plugins/
     # Example format: plugins=(rails git textmate ruby lighthouse)
     # Add wisely, as too many plugins slow down shell startup.
-    plugins=(git brew dotenv vscode aws docker colorize command-not-found fzf)
+    # NOTE: per-directory env comes from direnv (hooked in below), not the dotenv plugin
+    plugins=(git brew vscode aws docker colorize command-not-found fzf)
 
     source $ZSH/oh-my-zsh.sh
 
@@ -150,3 +149,13 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     unsetopt share_history
 
 fi # $ZSH_VERSION
+
+# direnv - loads .envrc when entering a directory (or any subdirectory of it),
+# and unloads it again on the way out.
+if command -v direnv &> /dev/null; then
+    if [[ -n $ZSH_VERSION ]]; then
+        eval "$(direnv hook zsh)"
+    elif [[ -n $BASH_VERSION ]]; then
+        eval "$(direnv hook bash)"
+    fi
+fi

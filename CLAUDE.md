@@ -24,13 +24,15 @@ The install script is idempotent — safe to re-run. It backs up existing files 
 - `NCS_WT_PATH` — worktree root (default: `~/devel/ncswt`)
 - `ZEPHYR_BASE`, `ZEPHYR_TOOLCHAIN_PATH` — auto-detected
 
-**`.wtdotenv`** is the template `.env` copied into each new worktree. It activates the venv, sets `ZEPHYR_BASE`, and adjusts `PATH`. The oh-my-zsh `dotenv` plugin auto-sources it on `cd`.
+**`.wtenvrc`** is the template `.envrc` copied into each new worktree. It activates the venv, sets `ZEPHYR_BASE`, and adjusts `PATH`. [direnv](https://direnv.net/) auto-loads it on `cd` (hooked in at the end of `.exports`) and unloads it when you leave. `ngwa` runs `direnv allow` on the new file so it loads without prompting.
+
+Because direnv searches parent directories and reverts its changes on exit, functions don't need to `cd` through the worktree root to trigger loading, and `.envrc` doesn't need to clean stale `zephyr/scripts` entries out of `PATH`.
 
 **Worktree layout** (non-standard, required by west):
 ```
-~/devel/ncswt/<branch>/nrf    ← the git worktree
-~/devel/ncswt/<branch>/.env   ← copied from .wtdotenv
-~/devel/ncswt/<branch>/.venv  ← isolated virtualenv
+~/devel/ncswt/<branch>/nrf     ← the git worktree
+~/devel/ncswt/<branch>/.envrc  ← copied from .wtenvrc
+~/devel/ncswt/<branch>/.venv   ← isolated virtualenv
 ~/devel/ncswt/<branch>/zephyr, bootloader, ...  ← west dependencies
 ```
 
