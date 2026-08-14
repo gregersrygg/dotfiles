@@ -134,10 +134,17 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     # prefix is needed: green = mamba/conda, blue = virtualenv, cyan = both.
     # Both usually resolve to the same name (a "foo" mamba env beside foo/.venv),
     # so that case collapses to a single name instead of repeating it.
+    #
+    # Emoji are in neither Powerline-patched nor Nerd Fonts; macOS falls back to
+    # Apple Color Emoji, so this renders with the plain Powerline fonts agnoster
+    # asks for. Set it to an empty string for a text-only segment.
+    PROMPT_ENV_ICON=$'\U1F40D'       # 🐍
+
     if typeset -f prompt_segment > /dev/null; then
         prompt_virtualenv() {
-            local mamba venv
+            local mamba venv icon
             [[ -n $CONDA_DEFAULT_ENV ]] && mamba=${CONDA_DEFAULT_ENV:t}
+            icon=${PROMPT_ENV_ICON:+"$PROMPT_ENV_ICON "}
 
             if [[ -n $VIRTUAL_ENV ]]; then
                 # .venv as a name says nothing, so fall back to the folder holding it
@@ -148,14 +155,14 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
             fi
 
             if [[ -n $mamba && $mamba == "$venv" ]]; then
-                prompt_segment cyan black "${mamba:gs/%/%%}"
+                prompt_segment cyan black "${icon}${mamba:gs/%/%%}"
             elif [[ -n $mamba && -n $venv ]]; then
-                # middot renders in Menlo and Monaco alike, unlike Nerd Font icons
-                prompt_segment cyan black "${mamba:gs/%/%%}·${venv:gs/%/%%}"
+                # middot, since it is present in every mono font worth using
+                prompt_segment cyan black "${icon}${mamba:gs/%/%%}·${venv:gs/%/%%}"
             elif [[ -n $mamba ]]; then
-                prompt_segment green black "${mamba:gs/%/%%}"
+                prompt_segment green black "${icon}${mamba:gs/%/%%}"
             elif [[ -n $venv ]]; then
-                prompt_segment blue black "${venv:gs/%/%%}"
+                prompt_segment blue black "${icon}${venv:gs/%/%%}"
             fi
         }
     fi
