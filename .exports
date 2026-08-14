@@ -112,8 +112,8 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     # Custom plugins may be added to $ZSH_CUSTOM/plugins/
     # Example format: plugins=(rails git textmate ruby lighthouse)
     # Add wisely, as too many plugins slow down shell startup.
-    # NOTE: per-directory env comes from direnv (hooked in below), not the dotenv plugin
-    plugins=(git brew vscode aws docker colorize command-not-found fzf)
+    # NOTE: direnv replaced the dotenv plugin for per-directory env
+    plugins=(git brew direnv vscode aws docker colorize command-not-found fzf)
 
     source $ZSH/oh-my-zsh.sh
 
@@ -181,7 +181,10 @@ fi # $ZSH_VERSION
 
 # direnv - loads .envrc when entering a directory (or any subdirectory of it),
 # and unloads it again on the way out.
-if command -v direnv &> /dev/null; then
+#
+# Under zsh with oh-my-zsh the direnv plugin above already installed the hook,
+# so this only covers bash and zsh without oh-my-zsh.
+if command -v direnv &> /dev/null && ! typeset -f _direnv_hook > /dev/null; then
     if [[ -n $ZSH_VERSION ]]; then
         eval "$(direnv hook zsh)"
     elif [[ -n $BASH_VERSION ]]; then
