@@ -54,7 +54,8 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
 
     # agnoster hides the user@host segment when the user matches DEFAULT_USER.
     # It still shows it over SSH, which is when it actually tells you something.
-    DEFAULT_USER="$USER"
+    # Set DEFAULT_USER="" in ~/.local/dotfiles/.exports to always show it.
+    DEFAULT_USER=${DEFAULT_USER-$USER}
 
     # Set list of themes to pick from when loading at random
     # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -135,12 +136,19 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     # Both usually resolve to the same name (a "foo" mamba env beside foo/.venv),
     # so that case collapses to a single name instead of repeating it.
     #
-    # Emoji are in neither Powerline-patched nor Nerd Fonts; macOS falls back to
-    # Apple Color Emoji, so this renders with the plain Powerline fonts agnoster
-    # asks for. Set it to an empty string for a text-only segment.
-    PROMPT_ENV_ICON=$'\U1F40D'       # 🐍
+    # Emoji are in neither Powerline-patched nor Nerd Fonts. macOS always has
+    # Apple Color Emoji to fall back on, so the snake is safe there; on Linux it
+    # depends on which fonts happen to be installed, so default to text-only.
+    # Set it to anything (or to "") in ~/.local/dotfiles/.exports to override.
+    if [[ $(uname) == "Darwin" ]]; then
+        PROMPT_ENV_ICON=${PROMPT_ENV_ICON-$'\U1F40D'}    # 🐍
+    fi
 
-    if typeset -f prompt_segment > /dev/null; then
+    # Requires an agnoster-shaped theme: one that draws with prompt_segment and
+    # already calls prompt_virtualenv. Themes with their own scheme -- including
+    # powerlevel10k, which has a prompt_virtualenv but no prompt_segment -- are
+    # left alone rather than half-overridden.
+    if typeset -f prompt_segment > /dev/null && typeset -f prompt_virtualenv > /dev/null; then
         prompt_virtualenv() {
             local mamba venv icon
             [[ -n $CONDA_DEFAULT_ENV ]] && mamba=${CONDA_DEFAULT_ENV:t}
