@@ -132,7 +132,7 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     # when VIRTUAL_ENV_DISABLE_PROMPT is set and knows nothing about conda/mamba.
     #
     # One segment, name only. The colour carries the type, so no "ma:"/"py:"
-    # prefix is needed: green = mamba/conda, blue = virtualenv, cyan = both.
+    # prefix is needed: green = mamba/conda, magenta = virtualenv, cyan = both.
     # Both usually resolve to the same name (a "foo" mamba env beside foo/.venv),
     # so that case collapses to a single name instead of repeating it.
     #
@@ -170,7 +170,9 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
             elif [[ -n $mamba ]]; then
                 prompt_segment green black "${icon}${mamba:gs/%/%%}"
             elif [[ -n $venv ]]; then
-                prompt_segment blue black "${icon}${venv:gs/%/%%}"
+                # not blue: prompt_dir is blue, and agnoster draws no separator
+                # between segments sharing a background, so they'd merge
+                prompt_segment magenta black "${icon}${venv:gs/%/%%}"
             fi
         }
     fi
