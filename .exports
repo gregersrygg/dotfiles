@@ -52,6 +52,10 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
     ZSH_THEME="agnoster"
 
+    # agnoster hides the user@host segment when the user matches DEFAULT_USER.
+    # It still shows it over SSH, which is when it actually tells you something.
+    DEFAULT_USER="$USER"
+
     # Set list of themes to pick from when loading at random
     # Setting this variable when ZSH_THEME=random will cause zsh to load
     # a theme from this variable instead of looking in $ZSH/themes/
@@ -125,19 +129,33 @@ if [[ -n $ZSH_VERSION && -d $HOME/.oh-my-zsh ]]; then
     #
     # This replaces agnoster's own prompt_virtualenv, which only draws a segment
     # when VIRTUAL_ENV_DISABLE_PROMPT is set and knows nothing about conda/mamba.
+    #
+    # One segment, name only. The colour carries the type, so no "ma:"/"py:"
+    # prefix is needed: green = mamba/conda, blue = virtualenv, cyan = both.
+    # Both usually resolve to the same name (a "foo" mamba env beside foo/.venv),
+    # so that case collapses to a single name instead of repeating it.
     if typeset -f prompt_segment > /dev/null; then
         prompt_virtualenv() {
-            if [[ -n $CONDA_DEFAULT_ENV ]]; then
-                prompt_segment green black "ma:${CONDA_DEFAULT_ENV:t:gs/%/%%}"
-            fi
+            local mamba venv
+            [[ -n $CONDA_DEFAULT_ENV ]] && mamba=${CONDA_DEFAULT_ENV:t}
 
             if [[ -n $VIRTUAL_ENV ]]; then
                 # .venv as a name says nothing, so fall back to the folder holding it
-                local venv=${VIRTUAL_ENV:t}
+                venv=${VIRTUAL_ENV:t}
                 if [[ $venv == ".venv" || $venv == "venv" || $venv == ".direnv" ]]; then
                     venv=${VIRTUAL_ENV:h:t}
                 fi
-                prompt_segment blue black "py:${venv:gs/%/%%}"
+            fi
+
+            if [[ -n $mamba && $mamba == "$venv" ]]; then
+                prompt_segment cyan black "${mamba:gs/%/%%}"
+            elif [[ -n $mamba && -n $venv ]]; then
+                # middot renders in Menlo and Monaco alike, unlike Nerd Font icons
+                prompt_segment cyan black "${mamba:gs/%/%%}·${venv:gs/%/%%}"
+            elif [[ -n $mamba ]]; then
+                prompt_segment green black "${mamba:gs/%/%%}"
+            elif [[ -n $venv ]]; then
+                prompt_segment blue black "${venv:gs/%/%%}"
             fi
         }
     fi
